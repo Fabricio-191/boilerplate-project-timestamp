@@ -1,30 +1,61 @@
-// index.js
-// where your node app starts
+const dns = require('dns');
+const express = require('express');
+const bodyParser = require("body-parser");
+const app = express();
 
-// init project
-var express = require('express');
-var app = express();
-
-// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC 
-var cors = require('cors');
-app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
-
-// http://expressjs.com/en/starter/static-files.html
+const cors = require('cors');
+app.use(cors({optionsSuccessStatus: 200})); 
 app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-// http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+const shortedURLs = []
+app.get("/api/shorturl/:short_url", function (req, res) {
+	const url = shortedURLs[req.params.short_url]
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+	if(url){
+		res.redirect(url)
+	}else{
+		res.json({ error: 'invalid url' })
+	}
 });
 
-app.get("/api/:date?", function (req, res) {
+app.post("/api/shorturl", async function (req, res) {
+	let url;
+
+	try{
+		url = new URL(req.body.url);
+	}catch{
+		res.json({ error: 'invalid url' })
+		return
+	}
+	
+	dns.lookup(url.hostname, (err) => {
+		if(err){
+			res.json({ error: 'invalid url' })
+		}else{
+			const i = shortedURLs.push(req.body.url) - 1;
+			res.json({ 
+				original_url: req.body.url,
+				short_url: i
+			})
+		}
+	});
+});
+
+app.get("/api/whoami", (req, res) => {
+	res.json({
+		ipaddress: req.headers['x-forwarded-for'],
+		language: req.headers['accept-language'],
+		software: req.headers['user-agent']
+	})
+});
+
+app.get("/api/:date?", (req, res) => {
   	let date;
 	if(!req.params.date || req.params.date === ''){
 		date = new Date()
@@ -47,8 +78,4 @@ app.get("/api/:date?", function (req, res) {
 	})
 });
 
-
-// listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
-});
+app.listen(process.env.PORT);
