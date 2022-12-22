@@ -1,4 +1,5 @@
 const dns = require('dns');
+const multer  = require('multer')
 const express = require('express');
 const bodyParser = require("body-parser");
 const app = express();
@@ -78,4 +79,19 @@ app.get("/api/:date?", (req, res) => {
 	})
 });
 
-app.listen(process.env.PORT);
+app.post("/api/fileanalyse", multer({ dest: 'uploads/' }).single('upfile'), (req, res) => {
+	if(!req.file){
+		res.json({
+			error: 'No file uploaded'
+		});
+		return;
+	}
+
+	res.json({
+		name: req.file.originalname,
+		type: req.file.mimetype,
+		size: req.file.size
+	})
+});
+
+app.listen(process.env.PORT || 3000);
