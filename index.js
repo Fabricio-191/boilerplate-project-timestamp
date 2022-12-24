@@ -160,16 +160,22 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 
 	const user = await userModel.findById(id);
 	if(!user) return res.json({ error: "User not found" });
-	
+
 	const exercise = new exerciseModel({
 		username: user.username,
 		description: req.body.description,
 		duration: req.body.duration,
-		date: req.body.date,
+		date: req.body.date || new Date(),
 	});
 
 	await exercise.save()
-	res.json(exercise)
+	res.json({
+		_id: exercise._id,
+		username: exercise.username,
+		description: exercise.description,
+		duration: exercise.duration,
+		date: exercise.date.toDateString(),
+	})
 });
 
 app.get("/api/users/:_id/logs", (req, res) => {
