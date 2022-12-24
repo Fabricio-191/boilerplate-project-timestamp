@@ -124,24 +124,25 @@ const exerciseSchema = new mongoose.Schema({
 });
 const exerciseModel = mongoose.model('Exercise', exerciseSchema);
 
-const userSchema = new mongoose.Schema({ username: String });
-const userModel = mongoose.model('User', userSchema);
-
-const logSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
 	username: String,
 	count: Number,
-	log: [{
+	logs: [{
 		description: String,
 		duration: Number,
 		date: { type: Date },
 	}],
 });
-const logModel = mongoose.model('Log', logSchema);
+const userModel = mongoose.model('User', userSchema);
 
 app.post("/api/users", async (req, res) => {
 	// You can POST to /api/users with form data username to create a new user.
 	// The returned response from POST /api/users with form data username will be an object with username and _id properties.
-	const user = new userModel({ username: req.body.username });
+	const user = new userModel({
+		username: req.body.username,
+		count: 0,
+		logs: [],
+	});
 	await user.save();
 	res.json(user);
 });
@@ -165,27 +166,36 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 		username: user.username,
 		description: req.body.description,
 		duration: req.body.duration,
-		date: req.body.date || new Date(),
+		date: req.body.date ? new Date(req.body.date) : new Date(),
+	});
+	await exercise.save()
+
+	user.count++;
+	user.logs.push({
+		description: exercise.description,
+		duration: exercise.duration,
+		date: exercise.date,
 	});
 
-	await exercise.save()
+	await user.save();
+
 	res.json({
 		_id: exercise._id,
 		username: exercise.username,
 		description: exercise.description,
 		duration: exercise.duration,
+		// @ts-ignore
 		date: exercise.date.toDateString(),
 	})
 });
 
 app.get("/api/users/:_id/logs", (req, res) => {
-	// You can make a GET request to /api/users/:_id/logs to retrieve a full exercise log of any user.
-	// A request to a user's log GET /api/users/:_id/logs returns a user object with a count property representing the number of exercises that belong to that user.
-	// A GET request to /api/users/:_id/logs will return the user object with a log array of all the exercises added.
-	// Each item in the log array that is returned from GET /api/users/:_id/logs is an object that should have a description, duration, and date properties.
-	// Waiting: You can add from, to and limit parameters to a GET /api/users/:_id/logs request to retrieve part of the log of any user. from and to are dates in yyyy-mm-dd format. limit is an integer of how many logs to send back.
-	const id = req.params._id;
-	
+	// You can add from, to and limit parameters to a GET /api/users/:_id/logs request to retrieve part of the log of any user. from and to are dates in yyyy-mm-dd format. limit is an integer of how many logs to send back.
+	const user = userModel.findById(req.params._id);
+
+
+
+	res.json(user);
 });
 // #endregion
 
