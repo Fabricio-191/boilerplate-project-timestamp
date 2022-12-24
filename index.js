@@ -136,8 +136,6 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model('User', userSchema);
 
 app.post("/api/users", async (req, res) => {
-	// You can POST to /api/users with form data username to create a new user.
-	// The returned response from POST /api/users with form data username will be an object with username and _id properties.
 	const user = new userModel({
 		username: req.body.username,
 		count: 0,
@@ -148,18 +146,11 @@ app.post("/api/users", async (req, res) => {
 });
 
 app.get("/api/users", async (req, res) => {
-	// You can make a GET request to /api/users to get a list of all users.
-	// The GET request to /api/users returns an array.
-	const users = await userModel.find();
-	res.json(users);
+	res.json(await userModel.find());
 });
 
 app.post("/api/users/:_id/exercises", async (req, res) => {
-	// You can POST to /api/users/:_id/exercises with form data description, duration, and optionally date. If no date is supplied, the current date will be used.
-	// The response returned from POST /api/users/:_id/exercises will be the user object with the exercise fields added.
-	const id = req.params._id;
-
-	const user = await userModel.findById(id);
+	const user = await userModel.findById(req.params._id);
 	if(!user) return res.json({ error: "User not found" });
 
 	const exercise = new exerciseModel({
@@ -189,7 +180,6 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 });
 
 app.get("/api/users/:_id/logs", async (req, res) => {
-	// You can add from, to and limit parameters to a GET /api/users/:_id/logs request to retrieve part of the log of any user. from and to are dates in yyyy-mm-dd format. limit is an integer of how many logs to send back.
 	const user = await userModel.findById(req.params._id);
 	if(!user) return res.json({ error: "User not found" });
 
