@@ -1,42 +1,59 @@
-/****** Main Styling ******/
-
-body {
-	font-family: 'Roboto', sans-serif;
-	font-size: 16px;
+* {
+	box-sizing: border-box;
+  }
+  
+  body {
+	font-family:sans-serif;
+	margin: 25px;
 	color: #222;
-	background-color: #ECF0F1;
-	text-align: center;
+	background-color: #f5f5f5;
   }
   
-  .container {
-	padding: 0;
-	margin-top: 40px;
+  h1 {
+	font-weight: bold;
+	
   }
   
-  .footer {
-	margin-top: 60px;
+  p {
+	max-width: 900px;
   }
   
-  a {
-	color: #2574A9;
+  form {
+	margin-bottom: 25px;
+	padding: 15px;
+	background-color: #87D37C;
+	display: inline-block;
+	width: 100%;
+	max-width: 340px;
+	border-radius: 5px;
   }
   
   input {
 	display: block;
-	position: relative;
-	margin: 10px auto;
+	margin-bottom: 10px;
+	padding: 5px;
+	width: 100%;
+	border: 1px solid lightgrey;
+	border-radius: 3px;
+	font-size: 16px;
   }
   
-  input#button {
-	width: 230px;
+  input[type=submit] {
+	font-size: 16px;
+	border-radius: 3px;
+	background-color: #E4F1FE;
+	border: 1px solid grey;
+	box-shadow: 2px 2px #999;
+	cursor: pointer;
   }
   
-  .view {
-	position:relative;
-	margin: auto;
-	margin-top: 40px;
-	border: 1px  solid  #aaa;
-	padding: 20px;
-	width: 60%;
-	min-width: 400px;
+  input[type=submit]:hover {
+	background-color: #FFFEC4;
+  }
+  
+  code {
+	font-family: monospace;
+	font-size: 1.2em;
+	background-color: #FFFEC4;
+	padding: 2px;
   }
