@@ -105,7 +105,6 @@ app.post("/api/fileanalyse", multer({ dest: 'uploads/' }).single('upfile'), (req
 // #endregion
 
 // #region Exercise tracker
-process.env.mongoPass = 'qgKkspUf9lGI8p3F';
 const uri = `mongodb://Fabricio-191:${process.env.mongoPass}@ac-eeqxbaq-shard-00-00.whoqxgz.mongodb.net:27017,ac-eeqxbaq-shard-00-01.whoqxgz.mongodb.net:27017,ac-eeqxbaq-shard-00-02.whoqxgz.mongodb.net:27017/?ssl=true&replicaSet=atlas-jfpg69-shard-0&authSource=admin&retryWrites=true&w=majority`;
 
 const mongoose = require('mongoose')
